@@ -1,6 +1,7 @@
 package controller;
 
 import Model.Student;
+import SearchCrudcontroller.SearchCrudcontroller;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import db.DataSet;
@@ -9,12 +10,15 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import util.CrudUtil;
+import util.ValidationUtil;
 
 import java.sql.*;
+import java.util.Optional;
 
 public class StudentController {
 
@@ -46,12 +50,12 @@ public class StudentController {
     public  void initialize(){
 
 
-        lblSId.setCellValueFactory(new PropertyValueFactory("SId"));
-        lblSName.setCellValueFactory(new PropertyValueFactory("SName"));
-        lblEmail.setCellValueFactory(new PropertyValueFactory("Email"));
-        lblCNo.setCellValueFactory(new PropertyValueFactory("CNo"));
-        lblAddress.setCellValueFactory(new PropertyValueFactory("Address"));
-        lblNIC.setCellValueFactory(new PropertyValueFactory("NIC"));
+        tblSId.setCellValueFactory(new PropertyValueFactory("SId"));
+        tblSName.setCellValueFactory(new PropertyValueFactory("SName"));
+        tblEmail.setCellValueFactory(new PropertyValueFactory("Email"));
+        tblCNo.setCellValueFactory(new PropertyValueFactory("CNo"));
+        tblAddress.setCellValueFactory(new PropertyValueFactory("Address"));
+        tblNIC.setCellValueFactory(new PropertyValueFactory("NIC"));
 
 
         try {
@@ -59,6 +63,29 @@ public class StudentController {
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
+
+        txtSId.textProperty().addListener((observable, oldValue, newValue) -> {
+            ValidationUtil.validate("^(S)[0-9]+$",newValue,txtSId,lblAdd);
+        });
+
+        txtSName.textProperty().addListener((observable, oldValue, newValue) -> {
+            ValidationUtil.validate("^[A-Z][a-z]*[ ][A-Z][a-z]*$",newValue,txtSName,lblAdd);
+        });
+        txtEmail.textProperty().addListener((observable, oldValue, newValue) -> {
+            ValidationUtil.validate("^[A-z]+$",newValue,txtEmail,lblAdd);
+        });
+        txtCNo.textProperty().addListener((observable, oldValue, newValue) -> {
+            ValidationUtil.validate("^[0-9]+$",newValue,txtCNo,lblAdd);
+        });
+        txtAddress.textProperty().addListener((observable, oldValue, newValue) -> {
+            ValidationUtil.validate("^[0-9]{1,3}$",newValue,txtAddress,lblAdd);
+        });
+
+        txtNIC.textProperty().addListener((observable, oldValue, newValue) -> {
+            ValidationUtil.validate("^(P)[0-9]+$",newValue,txtNIC,lblAdd);
+        });
+
+
     }
 
     private void loadALLstudent() throws ClassNotFoundException, SQLException {
@@ -129,12 +156,44 @@ public class StudentController {
 
 
 
-    public void DeleteOnAction(ActionEvent actionEvent) {
+    public void DeleteOnAction(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
+        Student selectedItem = Student.getSelectionModel().getSelectedItem();
+
+        BoxBlur blur = new BoxBlur(5, 5, 5);
+        StudentA.setEffect(blur);
+
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you Sure you want to Delete the Student?", ButtonType.YES, ButtonType.NO);
+        alert.setTitle("Delete");
+        alert.setHeaderText("Delete Student!!");
+        Optional<ButtonType> buttonType = alert.showAndWait();
+
+        if (buttonType.get().equals(ButtonType.YES)) {
+            SearchCrudcontroller.deleteStudent(selectedItem);
+            loadALLstudent();
+
+            StudentA.setEffect(null);
+        } else {
+            StudentA.setEffect(null);
+        }
+
     }
+
 
     public void UpdateOnAction(ActionEvent actionEvent) {
     }
 
     public void Search(KeyEvent keyEvent) {
+        if(txtSearch.getText().startsWith("S")){
+            ObservableList<Student> ob = FXCollections.observableArrayList(
+                    SearchCrudcontroller.searchReportBySId(
+                            "%"+txtSearch.getText()+"%"
+                    )
+            );
+            StudentA.setItems(ob);
+        }else{
+            ObservableList<Student> obj = FXCollections.observableArrayList(SearchCrudcontroller.searchReportBySName("%"+txtSearch.getText()+"%"));
+            StudentA.setItems(obj);
+        }
     }
 }
