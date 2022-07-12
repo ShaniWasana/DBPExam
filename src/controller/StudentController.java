@@ -46,50 +46,47 @@ public class StudentController {
     public  void initialize(){
 
 
-        lblMemberID.setCellValueFactory(new PropertyValueFactory("Member_Id"));
-        lblFullName.setCellValueFactory(new PropertyValueFactory("Full_Name"));
+        lblSId.setCellValueFactory(new PropertyValueFactory("SId"));
+        lblSName.setCellValueFactory(new PropertyValueFactory("SName"));
+        lblEmail.setCellValueFactory(new PropertyValueFactory("Email"));
+        lblCNo.setCellValueFactory(new PropertyValueFactory("CNo"));
         lblAddress.setCellValueFactory(new PropertyValueFactory("Address"));
-        lblContactNo.setCellValueFactory(new PropertyValueFactory("Cotact_No"));
-        lblAge.setCellValueFactory(new PropertyValueFactory("Age"));
-        lblPackageID.setCellValueFactory(new PropertyValueFactory("Package_Id"));
-        lblSheduleID.setCellValueFactory(new PropertyValueFactory("Schedule_Id"));
+        lblNIC.setCellValueFactory(new PropertyValueFactory("NIC"));
 
 
         try {
-            loadAllmember();
+            loadALLstudent();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void loadAllmember() throws ClassNotFoundException, SQLException {
+    private void loadALLstudent() throws ClassNotFoundException, SQLException {
         System.out.println("Load all");
         Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/gymmanagementsystem","root","1234");
-        String sql="SELECT *FROM member";
+        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ijse","root","1234");
+        String sql="SELECT *FROM student";
         Statement statement=con.createStatement();
         ResultSet result = statement.executeQuery(sql);
         System.out.println(result);
 
-        ObservableList<Member> oblist = FXCollections.observableArrayList();
+        ObservableList<Student> oblist = FXCollections.observableArrayList();
         while (result.next()){
             oblist.add(
-                    new Member(
-                            result.getString("member_Id"),
-                            result.getString("name"),
-                            result.getString("address"),
-                            result.getString("contact_No"),
-                            result.getInt("age"),
-                            result.getString("package_Id"),
-                            result.getString("schedule_Id")
-
+                    new Student(
+                            result.getString("SId"),
+                            result.getString("SName"),
+                            result.getString("Email"),
+                            result.getString("CNo"),
+                            result.getString("Address"),
+                            result.getString("NIC")
 
 
 
                     )
             );
         }
-        SMTable.setItems(oblist);
+        Student.setItems(oblist);
         System.out.println(oblist);
     }
 

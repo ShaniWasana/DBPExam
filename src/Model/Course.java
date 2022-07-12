@@ -7,17 +7,17 @@ public class Course {
     private String CName;
     private double Cost;
     private String Duration;
-    private String SId;
+    private String SubId;
 
-    public Course() {
-    }
-
-    public Course(String CId, String CName, double cost, String duration, String SId) {
+    public Course(String CId, String CName, double cost, String duration, String subId) {
         this.CId = CId;
         this.CName = CName;
         Cost = cost;
         Duration = duration;
-        this.SId = SId;
+        SubId = subId;
+    }
+
+    public Course() {
     }
 
     public String getCId() {
@@ -52,12 +52,12 @@ public class Course {
         Duration = duration;
     }
 
-    public String getSId() {
-        return SId;
+    public String getSubId() {
+        return SubId;
     }
 
-    public void setSId(String SId) {
-        this.SId = SId;
+    public void setSubId(String subId) {
+        SubId = subId;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class Course {
                 ", CName='" + CName + '\'' +
                 ", Cost=" + Cost +
                 ", Duration='" + Duration + '\'' +
-                ", SId='" + SId + '\'' +
+                ", SubId='" + SubId + '\'' +
                 '}';
     }
 }
