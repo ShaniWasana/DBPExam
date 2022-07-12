@@ -43,6 +43,55 @@ public class StudentController {
     public TextField txtSearch;
     public Label lblSearch;
 
+    public  void initialize(){
+
+
+        lblMemberID.setCellValueFactory(new PropertyValueFactory("Member_Id"));
+        lblFullName.setCellValueFactory(new PropertyValueFactory("Full_Name"));
+        lblAddress.setCellValueFactory(new PropertyValueFactory("Address"));
+        lblContactNo.setCellValueFactory(new PropertyValueFactory("Cotact_No"));
+        lblAge.setCellValueFactory(new PropertyValueFactory("Age"));
+        lblPackageID.setCellValueFactory(new PropertyValueFactory("Package_Id"));
+        lblSheduleID.setCellValueFactory(new PropertyValueFactory("Schedule_Id"));
+
+
+        try {
+            loadAllmember();
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadAllmember() throws ClassNotFoundException, SQLException {
+        System.out.println("Load all");
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/gymmanagementsystem","root","1234");
+        String sql="SELECT *FROM member";
+        Statement statement=con.createStatement();
+        ResultSet result = statement.executeQuery(sql);
+        System.out.println(result);
+
+        ObservableList<Member> oblist = FXCollections.observableArrayList();
+        while (result.next()){
+            oblist.add(
+                    new Member(
+                            result.getString("member_Id"),
+                            result.getString("name"),
+                            result.getString("address"),
+                            result.getString("contact_No"),
+                            result.getInt("age"),
+                            result.getString("package_Id"),
+                            result.getString("schedule_Id")
+
+
+
+
+                    )
+            );
+        }
+        SMTable.setItems(oblist);
+        System.out.println(oblist);
+    }
 
 
 
@@ -63,7 +112,14 @@ public class StudentController {
 
 
         try {
-            if (CrudUtil.execute("INSERT INTO student VALUES (?,?,?,?,?,?,?)", m.getMember_Id(), m.getFull_Name(), m.getAddress(), m.getContact_No(), m.getAge(), m.getPackage_Id(), m.getSchedule_Id())) {
+            if (CrudUtil.execute("INSERT INTO student VALUES (?,?,?,?,?,?,?)",
+                    m.getSId(),
+                    m.getSName(),
+                    m.getEmail(),
+                    m.getCNo(),
+                    m.getAddress(),
+                    m.getNIC()
+            )) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Saved!..").show();
 
             }
@@ -74,7 +130,7 @@ public class StudentController {
 
     }
 
-    }
+
 
     public void DeleteOnAction(ActionEvent actionEvent) {
     }
